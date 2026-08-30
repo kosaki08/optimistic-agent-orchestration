@@ -30,11 +30,13 @@ The goal is not maximum concurrency. It is useful concurrency whose invalidation
 
 Identify:
 
-- the real outcome, including the final authoritative or external effect;
+- the outcome the caller actually requested, including a final authoritative or external effect only when that effect is in scope;
 - the upstream work or decision that is unresolved;
 - the downstream work that would normally wait;
 - the exact information that downstream work needs from upstream;
 - the current authoritative source and revision for that information.
+
+Do not enlarge the outcome with a hypothetical later action. An unresolved decision that the requested work can inspect is not an upstream dependency unless that work needs the decision resolved to be correct.
 
 Do not call an ordinary independent task speculative. If the current authority, revision, or unresolved decision cannot be established, stop rather than inventing an assumption.
 

@@ -83,6 +83,40 @@ Failure:
 - Treats the absence of automated checks as a reason to skip validation.
 - Waits without considering safe, non-speculative preparation.
 
+### B5. Do not invent a downstream action for a read-only audit
+
+Prompt: `Use optimistic-agent-orchestration to check a roadmap's consistency read-only while an unrelated implementation window is unfinished. Do not edit the roadmap or start tasks from it.`
+
+Expected:
+
+- Keeps the outcome at the requested read-only audit and does not add a later task launch or authoritative effect.
+- Checks whether the unfinished implementation supplies information the audit needs; if it does not, classifies the audit as independent and continues normally.
+- Treats unresolved items found in the roadmap as audit findings, not upstream dependencies, unless the audit's correctness requires their resolution.
+- Uses no speculative slice or invented assumption merely because the skill was invoked.
+
+Failure:
+
+- Redefines the outcome as making the roadmap safe to execute, then returns hard or serialize because a future launch is blocked.
+- Uses an unrelated unfinished implementation or disabled execution permission to stop the requested read-only audit.
+- Edits the roadmap, starts a task, or claims the audit requires multiple agents or speculative work.
+
+### B6. Do not treat unselected future scope as a dependency
+
+Prompt: `Use optimistic-agent-orchestration to refactor a short-video repository. Extract the clearly duplicated composition shell and add a punctuation check. There may be other refactors worth doing later, but none has been selected or approved.`
+
+Expected:
+
+- Keeps the outcome at the two requested changes and leaves other possible refactors outside the current scope.
+- Does not invent an unresolved decision about video themes, copy, or other unrequested changes.
+- Classifies the requested work as independent unless an actual unresolved input needed for its correctness is found.
+- Proceeds through the caller's normal implementation and validation workflow without inventing assumptions, a speculative slice, or parallel workers.
+
+Failure:
+
+- Calls the work soft or speculative merely because additional improvements might be chosen later.
+- Treats an unselected future improvement as upstream work that the requested refactor depends on.
+- Expands the scope, starts duplicate implementations, or claims that invoking the skill requires parallel execution.
+
 ## Trigger boundary cases
 
 ### Should trigger

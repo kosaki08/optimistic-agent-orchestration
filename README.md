@@ -1,38 +1,38 @@
 # Optimistic Agent Orchestration
 
-`Start useful work early. Revalidate assumptions before making it authoritative.`
-
 A portable Agent Skill for deciding whether a bounded, reversible slice of dependent work can start before its upstream dependency is final.
 
-The goal is not maximum concurrency. It is to reduce critical-path waiting without creating more repair, review, and integration work than the workflow can absorb.
+`Start useful work early. Revalidate assumptions before making it authoritative.`
+
+Extra concurrency only helps while the workflow can still validate and integrate what it produces. Past that point, speculative work moves the bottleneck downstream instead of removing it.
 
 ## What it does
 
 The Skill helps an agent:
 
-- classify each dependency as independent, soft, speculative, or hard;
-- start only a bounded slice whose assumptions and invalidation cost are explicit;
-- keep execution separate from authority;
-- revalidate upstream state before merge, send, publish, deploy, or another authoritative effect;
-- cap speculative work in progress by validation capacity rather than available agent slots;
-- switch to finish-first when the validation queue grows.
+- classify each dependency as independent, soft, speculative, or hard
+- start only a bounded slice whose assumptions and invalidation cost are written down
+- treat starting the work and making its result authoritative as separate decisions
+- revalidate upstream state before merge, send, publish, deploy, or another authoritative effect
+- cap speculative work in progress by validation capacity rather than available agent slots
+- switch to finish-first when the validation queue grows
 
 ## When to use it
 
 Use it when unresolved upstream work, review, or contract decisions would normally block useful downstream work, but some isolated work may be repairable or discardable.
 
-For example, a client implementation may start against the observed revision of an API that is still under review, provided that the assumed contract is recorded, the slice remains isolated, and the final API is revalidated before integration.
+A client implementation may start against the observed revision of an API that is still under review, provided that the assumed contract is recorded, the slice remains isolated, and the final API is revalidated before integration.
 
 ## When not to use it
 
 Do not use it to:
 
-- parallelize ordinary independent tasks;
-- assign several agents to the same problem;
-- decide cross-task priority or scope;
-- bypass review, approval, permission, or external-effect gates;
-- justify speculation when waiting is cheaper than the added repair and validation work;
-- introduce a scheduler, registry, queue, state store, or plugin framework.
+- parallelize ordinary independent tasks
+- assign several agents to the same problem
+- decide cross-task priority or scope
+- bypass review, approval, permission, or external-effect gates
+- justify speculation when waiting is cheaper than the added repair and validation work
+- introduce a scheduler, registry, queue, state store, or plugin framework
 
 ## Install and invoke
 
@@ -42,30 +42,19 @@ The installable Skill directory is:
 skills/optimistic-agent-orchestration/
 ```
 
-Place that directory where your Agent Skills-compatible client discovers skills. The repository does not require a plugin system, task tracker, or workflow engine.
+Copy it to wherever your client discovers skills. It follows the [Agent Skills specification](https://agentskills.io/specification) and needs no plugin system, task tracker, or workflow engine.
 
-Example invocation:
-
-```text
-Use $optimistic-agent-orchestration to decide which part of this blocked task can start now and what must be revalidated before merge.
-```
-
-## Repository layout
+Ask for it in a prompt:
 
 ```text
-.
-├── LICENSE
-├── README.md
-└── skills/
-    └── optimistic-agent-orchestration/
-        ├── SKILL.md
-        └── evals/
-            └── cases.md
+Use the optimistic-agent-orchestration skill to decide which part of this blocked task can start now, and what has to be revalidated before merge.
 ```
 
-The evaluation cases test behavior and trigger boundaries. They are not a runtime dependency.
+Clients that support explicit invocation accept `$optimistic-agent-orchestration` in place of the name.
 
-## Prior art and scope
+`evals/cases.md` records the behavior and trigger boundaries the Skill is checked against. It is not a runtime dependency.
+
+## Prior art
 
 This Skill does not claim a new concurrency-control algorithm. It applies established ideas from optimistic concurrency control and speculative execution to Coding Agent workflows:
 
@@ -73,7 +62,7 @@ This Skill does not claim a new concurrency-control algorithm. It applies establ
 - David R. Jefferson, [Virtual Time](https://doi.org/10.1145/3916.3988)
 - Cristian Tapus and Jason Hickey, [Distributed speculative execution for reliability and fault tolerance](https://doi.org/10.1007/s00446-008-0073-1)
 
-The mapping to agent work is operational guidance: make assumptions explicit, keep speculative work reversible, validate before authority, and stop adding work when convergence becomes the bottleneck.
+The mapping to agent work is operational guidance: make assumptions explicit, keep speculative work reversible, revalidate before the result becomes authoritative, and stop adding speculative work once validation and integration are the bottleneck.
 
 ## License
 
